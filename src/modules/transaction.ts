@@ -1,14 +1,24 @@
 import {Chain, Common} from '@ethereumjs/common'
-import {Transaction, TxData} from '@ethereumjs/tx'
+import {Transaction, FeeMarketEIP1559Transaction, JsonTx} from '@ethereumjs/tx'
 import * as ethUtil from 'ethereumjs-util'
 import CustomError from '@helpers/error/custom-error'
 import {ISignedTx, ITxData} from '@helpers/types'
 
 export const makeRawEthTx = (data: ITxData): ISignedTx => {
-  let {to} = data
-  const {value, nonce, gasPrice, gasLimit, privateKey, chainId} = data
+  let {to, value} = data
+  const {
+    nonce,
+    gas,
+    type,
+    gasPrice,
+    gasLimit,
+    privateKey,
+    chainId,
+    maxPriorityFeePerGas,
+    maxFeePerGas,
+  } = data
 
-  if (isNaN(nonce) || isNaN(gasPrice) || isNaN(gasLimit)) {
+  if (isNaN(+nonce) || !to) {
     throw new CustomError('err_tx_eth_invalid_params')
   }
 
@@ -17,25 +27,37 @@ export const makeRawEthTx = (data: ITxData): ISignedTx => {
     if (to.startsWith('xdc')) {
       to = to.replace('xdc', '0x')
     }
+    value = +value
     const bigIntValue = new ethUtil.BN(value.toString())
-    const params: TxData = {
+    const finalGasLimit = gasLimit || gas
+    const params: JsonTx = {
       to,
-      nonce: ethUtil.intToHex(nonce),
+      nonce: nonce ? ethUtil.intToHex(+nonce) : '',
       value: ethUtil.bnToHex(bigIntValue),
-      gasPrice: ethUtil.intToHex(gasPrice),
-      gasLimit: ethUtil.intToHex(gasLimit),
+      gasPrice: gasPrice ? ethUtil.intToHex(+gasPrice) : '',
+      gasLimit: finalGasLimit ? ethUtil.intToHex(+finalGasLimit) : '',
+      maxPriorityFeePerGas: maxPriorityFeePerGas
+        ? ethUtil.intToHex(+maxPriorityFeePerGas)
+        : '',
+      maxFeePerGas: maxFeePerGas ? ethUtil.intToHex(+maxFeePerGas) : '',
     }
     if (data.hasOwnProperty('data') && data.data) {
       params.data = data.data
     }
     let common
     if (chainId) {
-      common = Common.custom({chainId})
+      common = Common.custom({chainId: +chainId})
     } else {
       common = new Common({chain: Chain.Mainnet})
     }
-    const tx = Transaction.fromTxData(params, {common})
 
+    let tx
+    if (type && +type === 2) {
+      // @ts-ignore
+      tx = FeeMarketEIP1559Transaction.fromTxData(params, {common})
+    } else {
+      tx = Transaction.fromTxData(params, {common})
+    }
     let buffer
     if (typeof privateKey === 'string') {
       buffer = Buffer.from(privateKey?.replace('0x', ''), 'hex')
@@ -47,12 +69,12 @@ export const makeRawEthTx = (data: ITxData): ISignedTx => {
     const serializedTx = signedTx.serialize()
     const hash = signedTx.hash().toString('hex')
     const txData = {
-      gasLimit: gasLimit.toString(),
-      gasPrice: gasPrice.toString(),
-      value: value.toString(),
-      nonce: nonce.toString(),
-      input: data.data,
-      from: data.from,
+      gasLimit: gasLimit?.toString(),
+      gasPrice: gasPrice?.toString(),
+      value: value?.toString(),
+      nonce: nonce?.toString(),
+      input: data?.data,
+      from: data?.from,
       to,
     }
     return {
@@ -61,7 +83,7 @@ export const makeRawEthTx = (data: ITxData): ISignedTx => {
       txData,
     }
   } catch (e) {
-    console.log(e)
+    console.log('makeRawEthTx e', e)
     throw new CustomError('err_tx_eth_build')
   }
 }
