@@ -78,7 +78,7 @@ export interface ITxClass {
 export interface IRawTxData {
   address: Address
   amount: number | string
-  nonce: number
+  nonce: number | string
   privateKey: PrivateKey
   fee: IFeeTx
   token?: IToken
@@ -87,15 +87,19 @@ export interface IRawTxData {
 
 export interface ITxData {
   to: Address
-  value: number
-  nonce: number
-  gasPrice: number
-  gasLimit: number
+  value: number | string
+  nonce: number | string
   privateKey: PrivateKey
-  from?: Address
+  from?: string
+  type?: number | string
+  gasPrice?: number | string
+  gasLimit?: number | string
+  gas?: number | string
   data?: string
   input?: string
-  chainId?: number
+  chainId?: number | string
+  maxPriorityFeePerGas?: number | string
+  maxFeePerGas?: number | string
 }
 
 export interface IFeeTx {

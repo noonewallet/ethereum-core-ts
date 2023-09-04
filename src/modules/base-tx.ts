@@ -58,7 +58,7 @@ export class BaseTx {
    * @returns {Array} A list with the optimal and custom fee
    */
 
-  async calcFee(customGasPriceGwei = 0, customGasLimit = 0) {
+  calcFee(customGasPriceGwei = 0, customGasLimit = 0) {
     this.feeList = [
       {
         id: 'optimal',

@@ -12,7 +12,7 @@ const ErrorCodes: ErrorCodes = {
   err_tx_eth_contract: 'Invalid contract address',
   err_tx_eth_build: 'ETH transaction failed. Check all parameters',
   err_tx_eth_invalid_params:
-    'Invalid params. Nonce, value, gas price and gas limit have to be a number',
+    'Invalid params. Nonce and to are required parameters',
   err_tx_eth_invalid_params_string:
     'Invalid params. Parameters "to" must be string based',
 }

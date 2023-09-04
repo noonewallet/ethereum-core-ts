@@ -10,7 +10,7 @@ import {
 } from '@helpers/types'
 import {
   DERIVATION_PATH,
-  DEFAULT_DECODE_PARAMS,
+  DECODE_PARAMS,
   TRANSFER_METHOD_ID,
 } from '@helpers/config'
 import {currencies} from '@helpers/currencies'
@@ -99,14 +99,10 @@ export const decodeInputData = (
 ): IDecodedInputData => {
   try {
     const input_data = '0x' + input.slice(10)
-    const decode = web3.eth.abi.decodeParameters(
-      decodeParams || DEFAULT_DECODE_PARAMS,
-      input_data,
-    )
-    if (!input.startsWith(TRANSFER_METHOD_ID)) {
-      decode.amount = 0
-    }
-    return decode
+    const methodId = input.slice(0, 10)
+    const params =
+      decodeParams || DECODE_PARAMS[methodId] || DECODE_PARAMS.default
+    return web3.eth.abi.decodeParameters(params, input_data)
   } catch (e) {
     if (e instanceof Error) {
       console.log('decodeInputData error', e.message)
