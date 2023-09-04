@@ -3,7 +3,7 @@ import {CoinsNetwork} from '@noonewallet/network-js'
 import bigDecimal from 'js-big-decimal'
 
 import {BaseTx} from '@modules/base-tx'
-import {ITxClass, ITxData, IHeader, IRawTxData, ISignedTx} from '@helpers/types'
+import {ITxClass, ITxData, IRawTxData, ISignedTx} from '@helpers/types'
 import {currencies} from '@helpers/currencies'
 import converter from '@helpers/converters'
 import {web3} from '@helpers/utils'
@@ -22,7 +22,6 @@ interface IEntrypoint {
 
 interface ITxClassGraphite extends ITxClass {
   entrypoint: IEntrypoint
-  header: IHeader
 }
 
 interface IActivationData {
@@ -44,7 +43,6 @@ interface IKycData {
 
 export class GTx extends BaseTx {
   private entrypoint: IEntrypoint
-  private header: IHeader
   public reqHandler: any
 
   constructor(data: ITxClassGraphite) {
@@ -56,7 +54,6 @@ export class GTx extends BaseTx {
       entrypointNode: data.entrypoint.entrypointNode,
     }
     this.reqHandler = CoinsNetwork.graphite
-    this.header = data.header
   }
 
   make(txData: IRawTxData): ISignedTx {
@@ -118,10 +115,7 @@ export class GTx extends BaseTx {
         to: to || this.address,
         data,
       }
-      const gasAmount = await this.reqHandler.getEstimateGas(
-        params,
-        this.header,
-      )
+      const gasAmount = await this.reqHandler.getEstimateGas(params)
 
       return gasAmount || DEFAULT_GAS_LIMIT
     } catch (e) {
@@ -138,7 +132,6 @@ export class GTx extends BaseTx {
       const data: IKycData = await this.reqHandler.createKycRequest(
         this.address,
         level,
-        this.header,
       )
       const fee = +data.gas * this.gasPrice
       let finalValue = fee
@@ -165,7 +158,6 @@ export class GTx extends BaseTx {
       const data = await this.reqHandler.createFilterRequest(
         this.address,
         level,
-        this.header,
       )
       const fee = +data.gas * this.gasPrice
       data.coinValue = +converter.wei_to_eth(fee)
@@ -220,7 +212,7 @@ export class GTx extends BaseTx {
 
   async calcActivationAmount() {
     const activationData: string = this.getActivateAccountData()
-    const initialFee = await this.reqHandler.getInitialFee(this.header)
+    const initialFee = await this.reqHandler.getInitialFee()
     const initialFeeData = web3.utils.toHex(+initialFee)
     const estimateGas = await this.getEstimateGas(
       FEE_CONTRACT_ADDR,

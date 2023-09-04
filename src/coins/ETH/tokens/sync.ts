@@ -5,7 +5,6 @@ import {CoinsNetwork} from '@noonewallet/network-js'
 import {
   Address,
   Contract,
-  IHeader,
   ITokenTxSync,
   IRawTokenTxSync,
   RawTokenTxMap,
@@ -17,8 +16,8 @@ export class EthTokenSync extends BaseSync {
   private otherTopics: string
   private tokenTransactions: ITokenTxSync[]
 
-  constructor(address: Address, headers: IHeader, contract: Contract) {
-    super(address, headers)
+  constructor(address: Address, contract: Contract) {
+    super(address)
     this.tokenTransactions = []
     this.contract = contract
     this.topic0 =
@@ -33,11 +32,7 @@ export class EthTokenSync extends BaseSync {
   }
 
   async getBalance() {
-    this.balance = await this.reqHandler.getBalance(
-      this.address,
-      this.contract,
-      this.headers,
-    )
+    this.balance = await this.reqHandler.getBalance(this.address, this.contract)
 
     return this.balance
   }
@@ -58,7 +53,6 @@ export class EthTokenSync extends BaseSync {
       this.contract,
       this.topic0,
       this.otherTopics,
-      this.headers,
     )
     const formatedTxs: ITokenTxSync[] = this.processTransactions(
       res,
@@ -72,7 +66,6 @@ export class EthTokenSync extends BaseSync {
       this.contract,
       this.topic0,
       this.otherTopics,
-      this.headers,
     )
     const formattedTxs: ITokenTxSync[] = this.processTransactions(
       res,

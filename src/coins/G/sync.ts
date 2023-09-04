@@ -1,4 +1,4 @@
-import {Address, IHeader} from '@helpers/types'
+import {Address} from '@helpers/types'
 import {BaseSyncWithMethods} from '@modules/base-sync'
 // @ts-ignore
 import {CoinsNetwork} from '@noonewallet/network-js'
@@ -29,8 +29,8 @@ export class GSync extends BaseSyncWithMethods {
   private info: IGInfo
   private gasLimit: number
 
-  constructor(address: Address, headers: IHeader) {
-    super(address, headers)
+  constructor(address: Address) {
+    super(address)
     this.info = {
       active: false,
       kycFilterLevel: 0,
@@ -47,10 +47,7 @@ export class GSync extends BaseSyncWithMethods {
 
   async getTransactions(): Promise<void> {
     await super.getTransactions()
-    this.transactions = await this.reqHandler.getTransactions(
-      this.address,
-      this.headers,
-    )
+    this.transactions = await this.reqHandler.getTransactions(this.address)
     this.processTransactions()
   }
 
@@ -83,7 +80,7 @@ export class GSync extends BaseSyncWithMethods {
   }
 
   async getGasPrice(): Promise<void> {
-    const res = await this.reqHandler.getGasPrice(this.address, this.headers)
+    const res = await this.reqHandler.getGasPrice(this.address)
 
     if (res) {
       this.gasPrice = res.gasPrice || DEFAULT_GAS_PRICE
@@ -95,7 +92,6 @@ export class GSync extends BaseSyncWithMethods {
   async getAddressInfo() {
     const {balance, ...info} = await this.reqHandler.getAddressInfo(
       this.address,
-      this.headers,
     )
     this.balance = parseInt(balance)
     this.info = {
