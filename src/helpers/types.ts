@@ -12,6 +12,7 @@ export interface IDecodedInputData {
 }
 
 export type Address = string
+export type AssetId = string
 export type Contract = string
 export type PrivateKey = string | Buffer
 
