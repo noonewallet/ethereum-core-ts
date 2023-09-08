@@ -3,8 +3,6 @@ import {BaseSyncWithMethods} from '@modules/base-sync'
 // @ts-ignore
 import {CoinsNetwork} from '@noonewallet/network-js'
 import {
-  DEFAULT_GAS_LIMIT,
-  DEFAULT_GAS_PRICE,
   FEE_CONTRACT_ADDR,
   FILTER_CONTRACT_ADDR,
   KYC_CONTRACT_ADDR,
@@ -27,7 +25,7 @@ interface IGInfo {
 
 export class GSync extends BaseSyncWithMethods {
   private info: IGInfo
-  private gasLimit: number
+  // private gasLimit: number
 
   constructor(address: Address) {
     super(address)
@@ -36,7 +34,7 @@ export class GSync extends BaseSyncWithMethods {
       kycFilterLevel: 0,
       kycLevel: 0,
     }
-    this.gasLimit = DEFAULT_GAS_LIMIT
+    // this.gasLimit = DEFAULT_GAS_LIMIT
     this.setReqHandler(CoinsNetwork.graphite)
   }
 
@@ -79,15 +77,15 @@ export class GSync extends BaseSyncWithMethods {
     }
   }
 
-  async getGasPrice(): Promise<void> {
-    const res = await this.reqHandler.getGasPrice(this.address)
-
-    if (res) {
-      this.gasPrice = res.gasPrice || DEFAULT_GAS_PRICE
-      const limit = Math.max(res.estimateGas, res.lastEstimateGas)
-      this.gasLimit = limit > 0 ? limit : DEFAULT_GAS_LIMIT
-    }
-  }
+  // async getGasPrice(): Promise<void> {
+  //   const res = await this.reqHandler.getGasPrice(this.address)
+  //
+  //   if (res) {
+  //     this.gasPrice = res.gasPrice || DEFAULT_GAS_PRICE
+  //     const limit = Math.max(res.estimateGas, res.lastEstimateGas)
+  //     this.gasLimit = limit > 0 ? limit : DEFAULT_GAS_LIMIT
+  //   }
+  // }
 
   async getAddressInfo() {
     const {balance, ...info} = await this.reqHandler.getAddressInfo(
@@ -104,7 +102,7 @@ export class GSync extends BaseSyncWithMethods {
   get DATA() {
     return {
       ...super.DATA,
-      gasLimit: this.gasLimit,
+      // gasLimit: this.gasLimit,
       info: this.info,
     }
   }

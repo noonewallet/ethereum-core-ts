@@ -5,6 +5,7 @@ import CustomError from '@helpers/error/custom-error'
 import {ISignedTx, ITxData} from '@helpers/types'
 
 export const makeRawEthTx = (data: ITxData): ISignedTx => {
+  console.log('makeRawEthTx', data)
   let {to, value} = data
   const {
     nonce,

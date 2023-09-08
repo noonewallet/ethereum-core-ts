@@ -13,7 +13,7 @@ export class BaseSync {
   protected balance: number
   protected transactions: ITxSync[]
   protected internalTransactions: ITxSync[]
-  protected gasPrice: number
+  // protected gasPrice: number
   protected blockNumber: number
   protected reqHandler: any
 
@@ -26,7 +26,7 @@ export class BaseSync {
     this.balance = 0
     this.transactions = []
     this.internalTransactions = []
-    this.gasPrice = 0
+    // this.gasPrice = 0
     this.blockNumber = 0
     this.reqHandler = null
   }
@@ -45,7 +45,7 @@ export class BaseSync {
       balance: this.balance,
       transactions: this.transactions,
       internalTransactions: this.internalTransactions,
-      gasPrice: this.gasPrice,
+      // gasPrice: this.gasPrice,
       blockNumber: this.blockNumber,
     }
   }
@@ -61,7 +61,7 @@ export class BaseSyncWithMethods extends BaseSync {
       await this.getBalance(),
       await this.getTransactions(),
       await this.getInternalTransactions(),
-      await this.getGasPrice(),
+      // await this.getGasPrice(),
       await this.getBlockNumber(),
     ])
   }
@@ -77,9 +77,9 @@ export class BaseSyncWithMethods extends BaseSync {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async getInternalTransactions(): Promise<any> {}
 
-  async getGasPrice(): Promise<void> {
-    this.gasPrice = await this.reqHandler.getGasPrice()
-  }
+  // async getGasPrice(): Promise<void> {
+  //   this.gasPrice = await this.reqHandler.getGasPrice()
+  // }
 
   async getBlockNumber(): Promise<void> {
     this.blockNumber = await this.reqHandler.getBlockNumber()

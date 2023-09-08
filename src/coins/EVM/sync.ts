@@ -23,7 +23,7 @@ export class EvmSync extends BaseSync {
     await Promise.all([
       await this.getBalance(),
       await this.getBlockNumber(),
-      await this.getGasPrice(),
+      // await this.getGasPrice(),
       await this.getTransactions(),
       await this.getInternalTransactions(),
     ])
@@ -48,9 +48,9 @@ export class EvmSync extends BaseSync {
     )
   }
 
-  async getGasPrice(): Promise<void> {
-    this.gasPrice = await this.reqHandler.getGasPrice(this.assetId)
-  }
+  // async getGasPrice(): Promise<void> {
+  //   this.gasPrice = await this.reqHandler.getGasPrice(this.assetId)
+  // }
 
   async getBlockNumber(): Promise<void> {
     this.blockNumber = await this.reqHandler.getBlockNumber(this.assetId)

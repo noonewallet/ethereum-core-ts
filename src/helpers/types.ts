@@ -15,6 +15,7 @@ export type Address = string
 export type AssetId = string
 export type Contract = string
 export type PrivateKey = string | Buffer
+export type ChainId = number
 
 export interface IEthBasedCore {
   node: HDNode
@@ -71,6 +72,8 @@ export interface ITxClass {
   address: Address
   balance: number
   gasPrice: number
+  gasPriceGwei: number
+  unit: string
   gasLimit?: number
   token?: IToken | undefined
   infuraUrl?: string | undefined
@@ -84,6 +87,7 @@ export interface IRawTxData {
   fee: IFeeTx
   token?: IToken
   data?: string
+  chainId?: ChainId
 }
 
 export interface ITxData {
@@ -98,7 +102,7 @@ export interface ITxData {
   gas?: number | string
   data?: string
   input?: string
-  chainId?: number | string
+  chainId?: ChainId
   maxPriorityFeePerGas?: number | string
   maxFeePerGas?: number | string
 }
@@ -107,6 +111,7 @@ export interface IFeeTx {
   id: string
   gasPrice: number
   gasLimit: number
+  unit: string
   gasPriceGwei?: number
   coinValue?: number
   value?: number
