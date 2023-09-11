@@ -75,6 +75,8 @@ export class EthTokenSync extends BaseSync {
   }
 
   processTransactions(txs: IRawTokenTxSync[], action: string): ITokenTxSync[] {
+    if (!txs || !txs.length) return []
+
     const txsMap: RawTokenTxMap = {}
     txs.forEach((item) => {
       if (!txsMap[item.transactionHash]) {

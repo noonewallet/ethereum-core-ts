@@ -3,6 +3,7 @@ import {Address, AssetId, ITxSync} from '@helpers/types'
 import {CoinsNetwork} from '@noonewallet/network-js'
 import {BaseSync} from '@modules/base-sync'
 import {decodeInputData} from '@helpers/utils'
+import {EMPTY_INPUT_MARKER} from '@helpers/config'
 
 /**
  * Class EthSync
@@ -13,6 +14,7 @@ import {decodeInputData} from '@helpers/utils'
 
 export class EvmSync extends BaseSync {
   protected assetId: AssetId
+
   constructor(address: Address, assetId: AssetId) {
     super(address)
     this.assetId = assetId
@@ -35,10 +37,19 @@ export class EvmSync extends BaseSync {
   }
 
   async getTransactions(): Promise<any> {
-    this.transactions = await this.reqHandler.getTransactions(
+    const res = await this.reqHandler.getTransactions(
       this.address,
       this.assetId,
     )
+
+    for (const tx of res) {
+      if (tx.input !== EMPTY_INPUT_MARKER) {
+        tx.decodedInput = decodeInputData(tx.input)
+      }
+    }
+
+    this.transactions = res
+    return this.transactions
   }
 
   async getInternalTransactions(): Promise<any> {

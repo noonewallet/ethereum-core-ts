@@ -61,6 +61,8 @@ export class EvmTokenSync extends BaseSync {
   }
 
   processTransactions(txs: IRawTokenTxSync[]): ITokenTxSync[] {
+    if (!txs || !txs.length) return []
+
     const txsMap: RawTokenTxMap = {}
     txs.forEach((item) => {
       if (!txsMap[item.transactionHash]) {
@@ -73,6 +75,7 @@ export class EvmTokenSync extends BaseSync {
       const group = txsMap[hash]
       let amount
       const item: IRawTokenTxSync = group[0]
+
       if (group.length !== 1) {
         const topics = group.map((item) => item.topics).flat(1)
         const uniqTopics = [...new Set(topics)]

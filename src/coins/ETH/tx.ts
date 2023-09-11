@@ -2,19 +2,21 @@ import Web3 from 'web3'
 import bigDecimal from 'js-big-decimal'
 import {BaseTx} from '@modules/base-tx'
 import {makeRawEthTx} from '@modules/transaction'
-import {ITxClass, IRawTxData, ITxData} from '@helpers/types'
+import {ITxClass, IRawTxData, ITxData, IToken} from '@helpers/types'
 import {currencies} from '@helpers/currencies'
 import {abi} from '@helpers/abi/abi-erc20'
 import CustomError from '@helpers/error/custom-error'
 
 export class EthTx extends BaseTx {
   protected infuraUrl: string | undefined
+  protected token: IToken | undefined
   protected web3: any
 
   constructor(data: ITxClass) {
     super(data)
     this.feeIds = ['optimal', 'custom']
     this.infuraUrl = data?.infuraUrl
+    this.token = data?.token
 
     super.setCurrency(currencies.ETH)
   }
@@ -47,7 +49,7 @@ export class EthTx extends BaseTx {
       }
     }
 
-    const {address, fee, privateKey, nonce} = data
+    const {address, fee, privateKey, nonce, chainId} = data
     let decimals = token.decimals || 0
     let amount = data.amount
     if (typeof amount === 'string') {
@@ -83,10 +85,10 @@ export class EthTx extends BaseTx {
       gasPrice: +fee.gasPrice,
       gasLimit: +fee.gasLimit,
       data: contract.methods.transfer(address, amountHex).encodeABI(),
-      chainId: currencies.ETH.chainId,
       value: 0,
       nonce,
       privateKey,
+      chainId,
     }
     return makeRawEthTx(params)
   }

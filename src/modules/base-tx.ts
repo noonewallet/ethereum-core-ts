@@ -17,7 +17,6 @@ export const FeeIds: FeeId[] = ['optimal', 'custom']
 
 export class BaseTx {
   protected address: string
-  // protected chainid: number
   protected balance: number
   protected gasPrice: number
   protected gasLimit: number
@@ -36,7 +35,6 @@ export class BaseTx {
    */
   constructor(data: ITxClass) {
     this.address = data.address
-    // this.chainid = data.chainid
     this.balance = data.balance
     this.gasPrice = data.gasPrice
     this.gasLimit = data.gasLimit || DEFAULT_ETH_GAS_LIMIT
@@ -44,12 +42,10 @@ export class BaseTx {
     this.feeList = []
     this.feeIds = FeeIds
     this.hasCustom = this.feeIds.some((item) => item === 'custom')
-    console.log('build tx class', data, this)
   }
 
   setCurrency(currency: ICurrency) {
     this.currency = currency
-    console.log('setCurrency', currency)
   }
 
   setFeeList(list: FeeId[]) {
@@ -119,7 +115,6 @@ export class BaseTx {
 
   make(data: IRawTxData): ISignedTx {
     const {address, amount, fee, nonce, privateKey, chainId} = data
-    console.log()
     const amountInWei = converter.eth_to_wei(+amount)
     const finalAmount = +bigDecimal.add(amountInWei, fee.value)
     const surrender = +bigDecimal.subtract(this.balance, finalAmount)

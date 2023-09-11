@@ -5,7 +5,6 @@ import CustomError from '@helpers/error/custom-error'
 import {ISignedTx, ITxData} from '@helpers/types'
 
 export const makeRawEthTx = (data: ITxData): ISignedTx => {
-  console.log('makeRawEthTx', data)
   let {to, value} = data
   const {
     nonce,
@@ -37,14 +36,17 @@ export const makeRawEthTx = (data: ITxData): ISignedTx => {
       value: ethUtil.bnToHex(bigIntValue),
       gasPrice: gasPrice ? ethUtil.intToHex(+gasPrice) : '',
       gasLimit: finalGasLimit ? ethUtil.intToHex(+finalGasLimit) : '',
-      maxPriorityFeePerGas: maxPriorityFeePerGas
-        ? ethUtil.intToHex(+maxPriorityFeePerGas)
-        : '',
-      maxFeePerGas: maxFeePerGas ? ethUtil.intToHex(+maxFeePerGas) : '',
+    }
+    if (maxPriorityFeePerGas) {
+      params.maxPriorityFeePerGas = ethUtil.intToHex(+maxPriorityFeePerGas)
+    }
+    if (maxFeePerGas) {
+      params.maxFeePerGas = ethUtil.intToHex(+maxFeePerGas)
     }
     if (data.hasOwnProperty('data') && data.data) {
       params.data = data.data
     }
+
     let common
     if (chainId) {
       common = Common.custom({chainId: +chainId})
