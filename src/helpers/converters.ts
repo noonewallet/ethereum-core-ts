@@ -36,7 +36,7 @@ export default {
     const n1 = new bigDecimal(stringValue)
     const n2 = new bigDecimal(GWEI_FACTOR)
     const num = n1.multiply(n2)
-    const value = bigDecimal.floor(num.getValue())
+    const value = num.getValue()
     return +value
   },
   /**

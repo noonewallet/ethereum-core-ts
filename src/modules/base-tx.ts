@@ -20,6 +20,7 @@ export class BaseTx {
   protected balance: number
   protected gasPrice: number
   protected gasLimit: number
+  protected unit: string
   protected feeList: IFeeTx[]
   protected currency: ICurrency | undefined
   protected feeIds: FeeId[]
@@ -37,6 +38,7 @@ export class BaseTx {
     this.balance = data.balance
     this.gasPrice = data.gasPrice
     this.gasLimit = data.gasLimit || DEFAULT_ETH_GAS_LIMIT
+    this.unit = data.unit
     this.feeList = []
     this.feeIds = FeeIds
     this.hasCustom = this.feeIds.some((item) => item === 'custom')
@@ -59,16 +61,18 @@ export class BaseTx {
    */
 
   calcFee(customGasPriceGwei = 0, customGasLimit = 0) {
+    const feeInGwei = +converter.wei_to_gwei(this.gasPrice)
     this.feeList = [
       {
         id: 'optimal',
         gasPrice: +this.gasPrice,
         gasLimit: +this.gasLimit,
-        gasPriceGwei: +converter.wei_to_gwei(this.gasPrice),
+        gasPriceGwei: feeInGwei > 1 ? feeInGwei : 1,
         coinValue: +converter.wei_to_eth(
           +bigDecimal.multiply(this.gasPrice, this.gasLimit),
         ),
         value: +bigDecimal.multiply(this.gasPrice, this.gasLimit),
+        unit: this.unit,
       },
     ]
     if (this.hasCustom) {
@@ -93,6 +97,7 @@ export class BaseTx {
         +bigDecimal.multiply(customGasPriceWei, customGasLimit),
       ),
       value: +bigDecimal.multiply(customGasPriceWei, customGasLimit),
+      unit: this.unit,
     }
 
     return customFee
@@ -109,7 +114,7 @@ export class BaseTx {
    */
 
   make(data: IRawTxData): ISignedTx {
-    const {address, amount, fee, nonce, privateKey} = data
+    const {address, amount, fee, nonce, privateKey, chainId} = data
     const amountInWei = converter.eth_to_wei(+amount)
     const finalAmount = +bigDecimal.add(amountInWei, fee.value)
     const surrender = +bigDecimal.subtract(this.balance, finalAmount)
@@ -117,6 +122,7 @@ export class BaseTx {
     if (surrender < 0) {
       throw new CustomError('err_tx_eth_balance')
     }
+    const finalChainId = chainId || this.currency?.chainId || 1
 
     const params: ITxData = {
       to: address,
@@ -125,7 +131,7 @@ export class BaseTx {
       gasLimit: fee.gasLimit,
       nonce,
       privateKey,
-      chainId: this.currency?.chainId,
+      chainId: finalChainId,
     }
     return makeRawEthTx(params)
   }

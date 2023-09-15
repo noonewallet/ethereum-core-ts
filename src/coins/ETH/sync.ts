@@ -1,4 +1,4 @@
-import {Address, IHeader, ITxSync} from '@helpers/types'
+import {Address, ITxSync} from '@helpers/types'
 // @ts-ignore
 import {CoinsNetwork} from '@noonewallet/network-js'
 import {BaseSyncWithMethods} from '@modules/base-sync'
@@ -16,17 +16,15 @@ export class EthSync extends BaseSyncWithMethods {
   /**
    * Create a EthSync
    * @param {string} address - Ethereum wallet address
-   * @param {Object} headers - Request headers
    */
-  constructor(address: Address, headers: IHeader) {
-    super(address, headers)
+  constructor(address: Address) {
+    super(address)
     this.setReqHandler(CoinsNetwork.eth)
   }
 
   async getTransactions(): Promise<ITxSync[]> {
     const res: ITxSync[] = await this.reqHandler.getAllTransactions(
       this.address,
-      this.headers,
     )
 
     for (const tx of res) {
@@ -42,7 +40,6 @@ export class EthSync extends BaseSyncWithMethods {
   async getInternalTransactions(): Promise<ITxSync[]> {
     const res: ITxSync[] = await this.reqHandler.getInternalTransactions(
       this.address,
-      this.headers,
     )
     this.internalTransactions = res
     return this.internalTransactions

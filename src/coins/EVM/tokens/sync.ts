@@ -8,23 +8,20 @@ import {
   ITokenTxSync,
   IRawTokenTxSync,
   RawTokenTxMap,
+  AssetId,
 } from '@helpers/types'
 
-export class EthTokenSync extends BaseSync {
+export class EvmTokenSync extends BaseSync {
   private contract: Contract
-  private topic0: string
-  private otherTopics: string
+  protected assetId: AssetId
   private tokenTransactions: ITokenTxSync[]
 
-  constructor(address: Address, contract: Contract) {
+  constructor(address: Address, assetId: AssetId, contract: Contract) {
     super(address)
+    this.assetId = assetId
     this.tokenTransactions = []
     this.contract = contract
-    this.topic0 =
-      '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
-    this.otherTopics =
-      '0x000000000000000000000000' + this.address.replace('0x', '')
-    this.reqHandler = CoinsNetwork.ethTokens
+    this.reqHandler = CoinsNetwork.evm
   }
 
   async Start() {
@@ -32,49 +29,38 @@ export class EthTokenSync extends BaseSync {
   }
 
   async getBalance() {
-    this.balance = await this.reqHandler.getBalance(this.address, this.contract)
+    this.balance = await this.reqHandler.getTokenBalance({
+      address: this.address,
+      assetId: this.assetId,
+      contract: this.contract,
+    })
 
     return this.balance
   }
 
+  //
+  // async getTransactions(): Promise<void> {
+  //   this.tokenTransactions = []
+  //
+  //   await Promise.all([this.getInTransactions(), this.getOutTransactions()])
+  //   this.tokenTransactions = this.tokenTransactions.filter(
+  //     (item: ITokenTxSync, index: number, self: ITokenTxSync[]) => {
+  //       return index === self.findIndex((i) => i.hash === item.hash)
+  //     },
+  //   )
+  // }
+
   async getTransactions(): Promise<void> {
-    this.tokenTransactions = []
-
-    await Promise.all([this.getInTransactions(), this.getOutTransactions()])
-    this.tokenTransactions = this.tokenTransactions.filter(
-      (item: ITokenTxSync, index: number, self: ITokenTxSync[]) => {
-        return index === self.findIndex((i) => i.hash === item.hash)
-      },
-    )
-  }
-
-  async getInTransactions(): Promise<void> {
-    const res = await this.reqHandler.getInTransactions(
-      this.contract,
-      this.topic0,
-      this.otherTopics,
-    )
-    const formatedTxs: ITokenTxSync[] = this.processTransactions(
-      res,
-      'incoming',
-    )
+    const res = await this.reqHandler.getTokenTransactions({
+      address: this.address,
+      assetId: this.assetId,
+      contract: this.contract,
+    })
+    const formatedTxs: ITokenTxSync[] = this.processTransactions(res)
     this.tokenTransactions.push(...formatedTxs)
   }
 
-  async getOutTransactions(): Promise<void> {
-    const res = await this.reqHandler.getOutTransactions(
-      this.contract,
-      this.topic0,
-      this.otherTopics,
-    )
-    const formattedTxs: ITokenTxSync[] = this.processTransactions(
-      res,
-      'outcoming',
-    )
-    this.tokenTransactions.push(...formattedTxs)
-  }
-
-  processTransactions(txs: IRawTokenTxSync[], action: string): ITokenTxSync[] {
+  processTransactions(txs: IRawTokenTxSync[]): ITokenTxSync[] {
     if (!txs || !txs.length) return []
 
     const txsMap: RawTokenTxMap = {}
@@ -89,6 +75,7 @@ export class EthTokenSync extends BaseSync {
       const group = txsMap[hash]
       let amount
       const item: IRawTokenTxSync = group[0]
+
       if (group.length !== 1) {
         const topics = group.map((item) => item.topics).flat(1)
         const uniqTopics = [...new Set(topics)]
@@ -114,6 +101,7 @@ export class EthTokenSync extends BaseSync {
         '0x000000000000000000000000',
         '0x',
       )
+      const action = this.address === toAddress ? 'incoming' : 'outcoming'
       const tx = {
         to: action === 'incoming' ? this.address : toAddress,
         from: action === 'incoming' ? fromAddress : this.address,
