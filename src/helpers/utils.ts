@@ -1,18 +1,9 @@
 import * as ethUtil from 'ethereumjs-util'
 import CustomError from '@helpers/error/custom-error'
 import Web3 from 'web3'
-import {HDNode, derive} from '@noonewallet/core-js'
-import {
-  Address,
-  IDecodedInputData,
-  IDecodeParams,
-  IEthBasedCore,
-} from '@helpers/types'
-import {
-  DERIVATION_PATH,
-  DECODE_PARAMS,
-  TRANSFER_METHOD_ID,
-} from '@helpers/config'
+import {HDNode} from '@noonewallet/crypto-core-ts'
+import {Address, IDecodedInputData, IDecodeParams} from '@helpers/types'
+import {DERIVATION_PATH, DECODE_PARAMS} from '@helpers/config'
 import {currencies} from '@helpers/currencies'
 
 export const web3 = new Web3()
@@ -33,8 +24,9 @@ export const getEthPublicKey = (privateKey: Buffer): Buffer => {
 }
 
 /**
- * Getting a Ethereum wallet address by public key
+ * Getting an Ethereum wallet address by public key
  * @param {Buffer} publicKey - Ethereum public key
+ * @param {boolean} checksumAddress - If true converts Ethereum address to Checksum address
  * @returns {string} Ethereum wallet address
  */
 

@@ -1,8 +1,3 @@
-import {HDNode} from '../../../core-js'
-
-export interface IHeader {
-  [key: string]: string
-}
 export interface IDecodeParams {
   [key: string]: any
 }
@@ -16,13 +11,6 @@ export type AssetId = string
 export type Contract = string
 export type PrivateKey = string | Buffer
 export type ChainId = number
-
-export interface IEthBasedCore {
-  node: HDNode
-  privateKey: string
-  publicKey: string
-  externalAddress: Address
-}
 
 export interface ITxSync {
   blockNumber: number
@@ -67,12 +55,10 @@ export interface RawTokenTxMap {
 }
 
 // TX
-
 export interface ITxClass {
   address: Address
   balance: number
   gasPrice: number
-  gasPriceGwei: number
   unit: string
   gasLimit?: number
   token?: IToken | undefined
