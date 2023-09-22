@@ -1,4 +1,4 @@
-import {hdFromSeed, mnemonicToSeed} from '@noonewallet/core-js'
+import {hdFromSeed, mnemonicToSeed} from '@noonewallet/crypto-core-ts'
 import {mnemonic} from '../../mocks/walletMock'
 import {currencies} from '@helpers/currencies'
 import {getEthCore, getEthAddress} from '@helpers/utils'
@@ -8,6 +8,8 @@ const getNode = () => {
   const seed = mnemonicToSeed(mnemonic)
   return hdFromSeed(seed)
 }
+
+const unit = 'GWEI'
 
 const ethCoreTest = {
   externalAddress: '0xb2a63645ffbeeed9530261e1569e4d6a9a279b63',
@@ -55,6 +57,7 @@ describe('Utils Tests', () => {
       address: testTx.addressFrom,
       balance: testTx.balance,
       gasPrice: testTx.gasPrice,
+      unit,
     })
     const feeList = txHandler.calcFee()
 

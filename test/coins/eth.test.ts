@@ -9,10 +9,12 @@ export const expectedSignedTx = {
 }
 const valueInEth = 0.0052347
 const value = converters.eth_to_wei(valueInEth)
+const unit = 'GWEI'
 const fee: IFeeTx = {
   id: 'optimal',
   gasPrice: 69300000000,
   gasLimit: 21000,
+  unit,
 }
 const txData: ITxData = {
   to: '0x39cf65754e55c69e5729b4ea57df526fa8ea684f',
@@ -35,6 +37,7 @@ describe('Eth Tests', () => {
       address: '0x1e8d99d2278acc10a9d67d89983e2920df33b485',
       balance: 6690000000000000,
       gasPrice: 55000000233,
+      unit,
     }
     const tx = new EthTx(classData)
     expect(tx).toBeDefined()
@@ -45,6 +48,7 @@ describe('Eth Tests', () => {
       address: '0x1e8d99d2278acc10a9d67d89983e2920df33b485',
       balance: 100000000000000000,
       gasPrice: 55000000233,
+      unit,
     }
     const tx = new EthTx(classData)
     const rawTxData: IRawTxData = {

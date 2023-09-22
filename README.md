@@ -1,6 +1,6 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://github.com/noonewallet/ethereum-core-ts/blob/main/LICENSE)
 [![Platform](https://img.shields.io/badge/platform-web-blue.svg?style=flat)]()
-![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnoonewallet%2Fethereum-core-ts%2Fmain%2Fpackage.json&query=%24.version)
+![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnoonewallet%2Fethereum-core-ts%2Fmain%2Fpackage.json&query=version&label=version)
 
 ![ethereum-core-ts](https://github.com/noonewallet/noone-android-core-crypto/assets/111989613/1f062349-24d4-4824-9c00-b8f2724eca51)
 
