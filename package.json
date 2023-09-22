@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@ethereumjs/tx": "^4.2.0",
-    "@noonewallet/core-js": "file:../core-js",
+    "@noonewallet/crypto-core-ts": "github:noonewallet/crypto-core-ts",
     "@noonewallet/network-js": "file:../network-js",
     "ethereumjs-util": "^7.1.5",
     "js-big-decimal": "^1.4.1",
