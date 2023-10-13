@@ -5,6 +5,7 @@ import {HDNode} from '@noonewallet/crypto-core-ts'
 import {Address, IDecodedInputData, IDecodeParams} from '@helpers/types'
 import {DERIVATION_PATH, DECODE_PARAMS} from '@helpers/config'
 import {currencies} from '@helpers/currencies'
+import {abi} from '@helpers/abi/abi-erc20'
 
 export const web3 = new Web3()
 
@@ -144,4 +145,27 @@ export const getEthCore = (node: HDNode, coin?: string) => {
     publicKey: publicKeyHex,
     externalAddress,
   }
+}
+
+export const encodeInputData = (toAddress: string, amountInWei: string) => {
+  if (!toAddress || !amountInWei) {
+    throw Error('Parameters are required')
+  }
+
+  const params = web3.eth.abi
+    .encodeParameters(['address', 'uint256'], [toAddress, +amountInWei])
+    .replace(/^(0x)/, '')
+  return params
+}
+
+const IdList = {
+  '0x095ea7b3': 'approve',
+  '0xa9059cbb': 'transfer',
+  '0x3eca9c0a': 'fillOrderRFQ',
+}
+export const getFunctionNameByMethodId = (methodId: string) => {
+  if (!methodId) return ''
+  if (methodId.length !== 10) return ''
+  // @ts-ignore
+  return methodId in IdList ? IdList[methodId] : ''
 }
