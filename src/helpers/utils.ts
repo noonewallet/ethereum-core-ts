@@ -153,7 +153,7 @@ export const encodeInputData = (toAddress: string, amountInWei: string) => {
   }
 
   const params = web3.eth.abi
-    .encodeParameters(['address', 'uint256'], [toAddress, +amountInWei])
+    .encodeParameters(['address', 'uint256'], [toAddress, amountInWei])
     .replace(/^(0x)/, '')
   return params
 }
