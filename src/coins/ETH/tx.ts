@@ -82,6 +82,11 @@ export class EthTx extends BaseTx {
     const params: ITxData = {
       from: this.address,
       to: token.contract,
+      type: +fee.gasPrice ? 0 : 2,
+      maxPriorityFeePerGas: fee.maxPriorityFeePerGas,
+      maxFeePerGas: fee.maxFeePerGas,
+      l1GasPrice: fee.l1GasPrice,
+      l1DataFee: fee.l1DataFee,
       gasPrice: +fee.gasPrice,
       gasLimit: +fee.gasLimit,
       data: contract.methods.transfer(address, amountHex).encodeABI(),

@@ -34,8 +34,10 @@ export const makeRawEthTx = (data: ITxData): ISignedTx => {
       to,
       nonce: nonce ? ethUtil.intToHex(+nonce) : '',
       value: ethUtil.bnToHex(bigIntValue),
-      gasPrice: gasPrice ? ethUtil.intToHex(+gasPrice) : '',
       gasLimit: finalGasLimit ? ethUtil.intToHex(+finalGasLimit) : '',
+    }
+    if (gasPrice) {
+      params.gasPrice = ethUtil.intToHex(+gasPrice)
     }
     if (maxPriorityFeePerGas) {
       params.maxPriorityFeePerGas = ethUtil.intToHex(+maxPriorityFeePerGas)
@@ -72,8 +74,11 @@ export const makeRawEthTx = (data: ITxData): ISignedTx => {
     const serializedTx = signedTx.serialize()
     const hash = signedTx.hash().toString('hex')
     const txData = {
+      type: type,
       gasLimit: gasLimit?.toString(),
       gasPrice: gasPrice?.toString(),
+      maxPriorityFeePerGas: maxPriorityFeePerGas?.toString(),
+      maxFeePerGas: maxFeePerGas?.toString(),
       value: value?.toString(),
       nonce: nonce?.toString(),
       input: data?.data,

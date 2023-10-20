@@ -20,7 +20,13 @@ export class BaseTx {
   protected balance: number
   protected gasPrice: number
   protected gasLimit: number
+  protected maxPriorityFeePerGas: number
+  protected maxFeePerGas: number
+  protected estimatedBaseFee: number
+  protected l1GasPrice: number
+  protected l1DataFee: number
   protected unit: string
+  protected type: string
   protected feeList: IFeeTx[]
   protected currency: ICurrency | undefined
   protected feeIds: FeeId[]
@@ -34,10 +40,17 @@ export class BaseTx {
    * @param {number} data.gasPrice - Gas price for transaction
    */
   constructor(data: ITxClass) {
+    console.log(data)
     this.address = data.address
     this.balance = data.balance
     this.gasPrice = data.gasPrice
     this.gasLimit = data.gasLimit || DEFAULT_ETH_GAS_LIMIT
+    this.maxPriorityFeePerGas = data.maxPriorityFeePerGas || 0
+    this.estimatedBaseFee = data.estimatedBaseFee || 0
+    this.maxFeePerGas = data.maxFeePerGas || 0
+    this.l1GasPrice = data.l1GasPrice || 0
+    this.l1DataFee = data.l1DataFee || 0
+    this.type = data.type || ''
     this.unit = data.unit
     this.feeList = []
     this.feeIds = FeeIds
@@ -60,43 +73,87 @@ export class BaseTx {
    * @returns {Array} A list with the optimal and custom fee
    */
 
-  calcFee(customGasPriceGwei = 0, customGasLimit = 0) {
+  calcFee(
+    customGasPriceGwei = 0,
+    customGasLimit = 0,
+    customMaxFeePerGasGwei = 0,
+    customMaxPriorityFeePerGasGwei = 0,
+  ) {
     const feeInGwei = +converter.wei_to_gwei(this.gasPrice)
+    const maxFeePerGas =
+      this.type === 'eip1559'
+        ? +bigDecimal.add(+this.maxPriorityFeePerGas, +this.estimatedBaseFee)
+        : 0
+    let value =
+      this.type === 'eip1559'
+        ? +bigDecimal.multiply(+maxFeePerGas, +this.gasLimit)
+        : +bigDecimal.multiply(+this.gasPrice, +this.gasLimit)
+    if (+this.l1DataFee) {
+      value = +bigDecimal.add(value, +this.l1DataFee)
+    }
     this.feeList = [
       {
         id: 'optimal',
         gasPrice: +this.gasPrice,
         gasLimit: +this.gasLimit,
+        l1GasPrice: +this.l1GasPrice,
+        l1DataFee: +this.l1DataFee,
+        maxPriorityFeePerGas: +this.maxPriorityFeePerGas,
+        maxFeePerGas: maxFeePerGas,
+        estimatedBaseFee: +this.estimatedBaseFee,
+        type: this.type,
         gasPriceGwei: feeInGwei > 1 ? feeInGwei : 1,
-        coinValue: +converter.wei_to_eth(
-          +bigDecimal.multiply(this.gasPrice, this.gasLimit),
-        ),
-        value: +bigDecimal.multiply(this.gasPrice, this.gasLimit),
+        coinValue: +converter.wei_to_eth(value, 8),
+        value: value,
         unit: this.unit,
       },
     ]
+
     if (this.hasCustom) {
-      const customFee = this.getCustomFee(customGasPriceGwei, customGasLimit)
+      const customFee = this.getCustomFee(
+        customGasPriceGwei,
+        customGasLimit,
+        customMaxFeePerGasGwei,
+        customMaxPriorityFeePerGasGwei,
+      )
       this.feeList.push(customFee)
     }
     return this.feeList
   }
 
-  getCustomFee(customGasPriceGwei = 0, customGasLimit = 0) {
+  getCustomFee(
+    customGasPriceGwei = 0,
+    customGasLimit = 0,
+    customMaxFeePerGasGwei = 0,
+    customMaxPriorityFeePerGasGwei = 0,
+  ) {
     customGasPriceGwei = +customGasPriceGwei
     customGasLimit = +customGasLimit
     const customGasPriceWei = converter.gwei_to_wei(customGasPriceGwei)
+    const customMaxFeePerGasWei = converter.gwei_to_wei(customMaxFeePerGasGwei)
+    const customMaxPriorityFeePerGasWei = converter.gwei_to_wei(
+      customMaxPriorityFeePerGasGwei,
+    )
+    let value =
+      this.type === 'eip1559'
+        ? +bigDecimal.multiply(+customMaxFeePerGasWei, +customGasLimit)
+        : +bigDecimal.multiply(+customGasPriceWei, +customGasLimit)
 
+    if (+this.l1DataFee) {
+      value = +bigDecimal.add(value, +this.l1DataFee)
+    }
     const customFee: IFeeTx = {
       custom: true,
       id: 'custom',
+      l1GasPrice: +this.l1GasPrice,
+      l1DataFee: +this.l1DataFee,
+      maxFeePerGas: customMaxFeePerGasWei,
+      maxPriorityFeePerGas: customMaxPriorityFeePerGasWei,
       gasPrice: +customGasPriceWei,
       gasPriceGwei: +customGasPriceGwei,
       gasLimit: +customGasLimit,
-      coinValue: +converter.wei_to_eth(
-        +bigDecimal.multiply(customGasPriceWei, customGasLimit),
-      ),
-      value: +bigDecimal.multiply(customGasPriceWei, customGasLimit),
+      coinValue: +converter.wei_to_eth(value),
+      value: value,
       unit: this.unit,
     }
 
@@ -127,8 +184,11 @@ export class BaseTx {
     const params: ITxData = {
       to: address,
       value: amountInWei,
+      maxPriorityFeePerGas: fee.maxPriorityFeePerGas,
+      maxFeePerGas: fee.maxFeePerGas,
       gasPrice: fee.gasPrice,
       gasLimit: fee.gasLimit,
+      type: this.type === 'eip1559' ? 2 : 0,
       nonce,
       privateKey,
       chainId: finalChainId,

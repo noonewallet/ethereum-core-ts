@@ -60,7 +60,13 @@ export interface ITxClass {
   balance: number
   gasPrice: number
   unit: string
+  maxPriorityFeePerGas?: number
+  maxFeePerGas?: number
+  estimatedBaseFee?: number
+  l1GasPrice?: number
+  l1DataFee?: number
   gasLimit?: number
+  type?: string
   token?: IToken | undefined
   infuraUrl?: string | undefined
 }
@@ -91,6 +97,9 @@ export interface ITxData {
   chainId?: ChainId
   maxPriorityFeePerGas?: number | string
   maxFeePerGas?: number | string
+  estimatedBaseFee?: number | string
+  l1GasPrice?: number | string
+  l1DataFee?: number | string
 }
 
 export interface IFeeTx {
@@ -102,6 +111,12 @@ export interface IFeeTx {
   coinValue?: number
   value?: number
   custom?: boolean
+  maxPriorityFeePerGas?: number | string
+  maxFeePerGas?: number | string
+  estimatedBaseFee?: number | string
+  l1GasPrice?: number | string
+  l1DataFee?: number | string
+  type?: string
 }
 
 export interface IToken {
