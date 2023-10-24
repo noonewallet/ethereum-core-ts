@@ -152,7 +152,7 @@ export class BaseTx {
       gasPrice: +customGasPriceWei,
       gasPriceGwei: +customGasPriceGwei,
       gasLimit: +customGasLimit,
-      coinValue: +converter.wei_to_eth(value),
+      coinValue: +converter.wei_to_eth(value, 8),
       value: value,
       unit: this.unit,
     }
