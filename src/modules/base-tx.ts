@@ -40,7 +40,6 @@ export class BaseTx {
    * @param {number} data.gasPrice - Gas price for transaction
    */
   constructor(data: ITxClass) {
-    console.log(data)
     this.address = data.address
     this.balance = data.balance
     this.gasPrice = data.gasPrice
