@@ -1,7 +1,7 @@
-import {EthSync} from '@coins/ETH/sync'
+// import {EthSync} from '@coins/ETH/sync'
 import {XdcSync} from '@coins/XDC/sync'
 import {EthTx} from '@coins/ETH/tx'
-import {EthTokenSync} from '@coins/ETH/tokens/sync'
+// import {EthTokenSync} from '@coins/ETH/tokens/sync'
 import {XdcTx} from '@coins/XDC/tx'
 import {EvmSync} from '@coins/EVM/sync'
 import {EvmTokenSync} from '@coins/EVM/tokens/sync'
@@ -12,15 +12,4 @@ import {makeRawEthTx} from '@modules/transaction'
 export * as utils from '@helpers/utils'
 export {default as eth_converter} from '@helpers/converters'
 
-export {
-  EthSync,
-  EthTx,
-  XdcSync,
-  XdcTx,
-  EthTokenSync,
-  GSync,
-  GTx,
-  makeRawEthTx,
-  EvmSync,
-  EvmTokenSync,
-}
+export {EthTx, XdcSync, XdcTx, GSync, GTx, makeRawEthTx, EvmSync, EvmTokenSync}
