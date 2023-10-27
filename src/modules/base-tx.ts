@@ -8,7 +8,10 @@ import {ICurrency} from '@helpers/currencies'
 
 export type FeeId = 'optimal' | 'custom'
 export const FeeIds: FeeId[] = ['optimal', 'custom']
-
+export const FeeTypes = {
+  eip1559: 'eip1559',
+  legacy: 'legacy',
+}
 /**
  * Class EthereumTx.
  * This class is responsible for calculating the fee and generating and signing a Ethereum transaction
@@ -40,16 +43,15 @@ export class BaseTx {
    * @param {number} data.gasPrice - Gas price for transaction
    */
   constructor(data: ITxClass) {
-    console.log(data)
     this.address = data.address
     this.balance = data.balance
-    this.gasPrice = data.gasPrice
-    this.gasLimit = data.gasLimit || DEFAULT_ETH_GAS_LIMIT
-    this.maxPriorityFeePerGas = data.maxPriorityFeePerGas || 0
-    this.estimatedBaseFee = data.estimatedBaseFee || 0
-    this.maxFeePerGas = data.maxFeePerGas || 0
-    this.l1GasPrice = data.l1GasPrice || 0
-    this.l1DataFee = data.l1DataFee || 0
+    this.gasPrice = Number(data.gasPrice)
+    this.gasLimit = Number(data.gasLimit) || DEFAULT_ETH_GAS_LIMIT
+    this.maxPriorityFeePerGas = Number(data.maxPriorityFeePerGas) || 0
+    this.estimatedBaseFee = Number(data.estimatedBaseFee) || 0
+    this.maxFeePerGas = Number(data.maxFeePerGas) || 0
+    this.l1GasPrice = Number(data.l1GasPrice) || 0
+    this.l1DataFee = Number(data.l1DataFee) || 0
     this.type = data.type || ''
     this.unit = data.unit
     this.feeList = []
@@ -81,11 +83,11 @@ export class BaseTx {
   ) {
     const feeInGwei = +converter.wei_to_gwei(this.gasPrice)
     const maxFeePerGas =
-      this.type === 'eip1559'
+      this.type === FeeTypes.eip1559
         ? +bigDecimal.add(+this.maxPriorityFeePerGas, +this.estimatedBaseFee)
         : 0
     let value =
-      this.type === 'eip1559'
+      this.type === FeeTypes.eip1559
         ? +bigDecimal.multiply(+maxFeePerGas, +this.gasLimit)
         : +bigDecimal.multiply(+this.gasPrice, +this.gasLimit)
     if (+this.l1DataFee) {
@@ -135,7 +137,7 @@ export class BaseTx {
       customMaxPriorityFeePerGasGwei,
     )
     let value =
-      this.type === 'eip1559'
+      this.type === FeeTypes.eip1559
         ? +bigDecimal.multiply(+customMaxFeePerGasWei, +customGasLimit)
         : +bigDecimal.multiply(+customGasPriceWei, +customGasLimit)
 
@@ -188,7 +190,7 @@ export class BaseTx {
       maxFeePerGas: fee.maxFeePerGas,
       gasPrice: fee.gasPrice,
       gasLimit: fee.gasLimit,
-      type: this.type === 'eip1559' ? 2 : 0,
+      type: this.type === FeeTypes.eip1559 ? 2 : 0,
       nonce,
       privateKey,
       chainId: finalChainId,
