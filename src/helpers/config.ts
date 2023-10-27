@@ -87,3 +87,4 @@ export const CHAIN_IDS = {
 }
 
 export const DEFAULT_ETH_GAS_LIMIT = 21000
+export const DEFAULT_FEE_UNIT = 'GWEI'
