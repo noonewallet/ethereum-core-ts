@@ -2,7 +2,7 @@ import {hdFromSeed, mnemonicToSeed} from '@noonewallet/crypto-core-ts'
 import {mnemonic} from '../../mocks/walletMock'
 import {currencies} from '@helpers/currencies'
 import {getEthCore, getEthAddress} from '@helpers/utils'
-import {EthTx} from '../../src'
+import {EthTx} from '@coins/ETH/tx'
 
 const getNode = () => {
   const seed = mnemonicToSeed(mnemonic)
