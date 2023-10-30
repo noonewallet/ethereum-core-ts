@@ -1,7 +1,4 @@
-// @ts-ignore
-import {CoinsNetwork} from '@noonewallet/network-js'
 import bigDecimal from 'js-big-decimal'
-
 import {BaseTx} from '@modules/base-tx'
 import {ITxClass, ITxData, IRawTxData, ISignedTx} from '@helpers/types'
 import {currencies} from '@helpers/currencies'
@@ -11,7 +8,6 @@ import {makeRawEthTx} from '@modules/transaction'
 import {DEFAULT_GAS_LIMIT, SEPARATOR, FEE_CONTRACT_ADDR, LEVELS} from './config'
 import {FeeContractAbi} from '@helpers/abi/g-activate-account'
 import CustomError from '@helpers/error/custom-error'
-// @ts-ignore
 
 const CHAIN_ID = currencies.G.chainId
 
@@ -53,7 +49,6 @@ export class GTx extends BaseTx {
       isAnonymousNode: data.entrypoint.isAnonymousNode,
       entrypointNode: data.entrypoint.entrypointNode,
     }
-    this.reqHandler = CoinsNetwork.graphite
   }
 
   make(txData: IRawTxData): ISignedTx {
@@ -98,7 +93,7 @@ export class GTx extends BaseTx {
     to: string,
     value: string,
     data: string,
-  ): Promise<string> {
+  ): Promise<string | number> {
     try {
       if (!data) {
         if (!this.entrypoint.isAnonymousNode) {
@@ -115,61 +110,62 @@ export class GTx extends BaseTx {
         to: to || this.address,
         data,
       }
-      const gasAmount = await this.reqHandler.getEstimateGas(params)
+      // const gasAmount = await this.reqHandler.getEstimateGas(params)
 
-      return gasAmount || DEFAULT_GAS_LIMIT
+      return DEFAULT_GAS_LIMIT
+      // return gasAmount || DEFAULT_GAS_LIMIT
     } catch (e) {
       console.log('getEstimateGas e', e)
       return ''
     }
   }
 
-  async getDataForKycRequest(level: number): Promise<IKycData | string> {
-    if (!LEVELS.includes(+level)) {
-      throw Error('Level must be a number from 1 to 3')
-    }
-    try {
-      const data: IKycData = await this.reqHandler.createKycRequest(
-        this.address,
-        level,
-      )
-      const fee = +data.gas * this.gasPrice
-      let finalValue = fee
-      if (data?.value) {
-        finalValue += +data.value
-      }
-      data.coinValue = +converter.wei_to_eth(finalValue)
+  // async getDataForKycRequest(level: number): Promise<IKycData | string> {
+  //   if (!LEVELS.includes(+level)) {
+  //     throw Error('Level must be a number from 1 to 3')
+  //   }
+  //   try {
+  //     const data: IKycData = await this.reqHandler.createKycRequest(
+  //       this.address,
+  //       level,
+  //     )
+  //     const fee = +data.gas * this.gasPrice
+  //     let finalValue = fee
+  //     if (data?.value) {
+  //       finalValue += +data.value
+  //     }
+  //     data.coinValue = +converter.wei_to_eth(finalValue)
+  //
+  //     return data
+  //   } catch (e) {
+  //     if (e instanceof Error) {
+  //       console.log('getDataForKycRequest e', e.message)
+  //       return e.message
+  //     }
+  //     return ''
+  //   }
+  // }
 
-      return data
-    } catch (e) {
-      if (e instanceof Error) {
-        console.log('getDataForKycRequest e', e.message)
-        return e.message
-      }
-      return ''
-    }
-  }
-
-  async getDataForFilterRequest(level: number) {
-    if (!LEVELS.includes(+level)) {
-      throw Error('Level must be a number from 0 to 3')
-    }
-    try {
-      const data = await this.reqHandler.createFilterRequest(
-        this.address,
-        level,
-      )
-      const fee = +data.gas * this.gasPrice
-      data.coinValue = +converter.wei_to_eth(fee)
-
-      return data
-    } catch (e) {
-      if (e instanceof Error) {
-        console.log('getDataForFilterRequest e', e.message)
-        return e.message
-      }
-    }
-  }
+  // async getDataForFilterRequest(level: number) {
+  //   if (!LEVELS.includes(+level)) {
+  //     throw Error('Level must be a number from 0 to 3')
+  //   }
+  //   try {
+  //     const data = await this.reqHandler.createFilterRequest(
+  //       this.address,
+  //       level,
+  //     )
+  //     const fee = +data.gas * this.gasPrice
+  //     data.coinValue = +converter.wei_to_eth(fee)
+  //
+  //     return data
+  //   } catch (e) {
+  //     if (e instanceof Error) {
+  //       console.log('getDataForFilterRequest e', e.message)
+  //       return e.message
+  //     }
+  //   }
+  // }
 
   changeKycOrFilterLevel(
     reqData: IActivationData,
@@ -212,7 +208,8 @@ export class GTx extends BaseTx {
 
   async calcActivationAmount() {
     const activationData: string = this.getActivateAccountData()
-    const initialFee = await this.reqHandler.getInitialFee()
+    const initialFee = 0
+    // const initialFee = await this.reqHandler.getInitialFee()
     const initialFeeData = web3.utils.toHex(+initialFee)
     const estimateGas = await this.getEstimateGas(
       FEE_CONTRACT_ADDR,
