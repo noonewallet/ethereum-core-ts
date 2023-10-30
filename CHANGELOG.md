@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/mokkapps/changelog-generator-demo/compare/v1.2.1...v1.3.0) (2023-10-30)
+
+
+### Features
+
+* **449:** add fee 8f21d54
+
+
+### Bug Fixes
+
+* **808:** fix 8041151
+* add force conversion to integer 63b0fa0
+* set default fee unit for xdc; rm comments dcdb66c
+
+### [1.2.1](https://github.com/mokkapps/changelog-generator-demo/compare/v1.2.0...v1.2.1) (2023-10-17)
+
+
+### Bug Fixes
+
+* fix encode function c15a5d5
+
+## [1.2.0](https://github.com/mokkapps/changelog-generator-demo/compare/v1.1.0...v1.2.0) (2023-10-13)
+
+
+### Features
+
+* add new encode method;  add method for basic method ids ff02c88
+
+
+### Bug Fixes
+
+* add unit param into tests 3b17926
+
+
+* update core-js module 5045edb
+
 ## 1.1.0 (2023-09-15)
 
 
