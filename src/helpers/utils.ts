@@ -5,7 +5,7 @@ import {HDNode} from '@noonewallet/crypto-core-ts'
 import {Address, IDecodedInputData, IDecodeParams} from '@helpers/types'
 import {DERIVATION_PATH, DECODE_PARAMS} from '@helpers/config'
 import {currencies} from '@helpers/currencies'
-import {abi} from '@helpers/abi/abi-erc20'
+import {Transaction, FeeMarketEIP1559Transaction} from '@ethereumjs/tx'
 
 export const web3 = new Web3()
 
@@ -46,6 +46,34 @@ export const getEthAddress = (
   } catch (e) {
     console.log(e)
     throw new CustomError('err_core_eth_public_key')
+  }
+}
+export const recoverAddressFromRawTx = (rawTx: string): string => {
+  try {
+    const formattedRawTx = rawTx.startsWith('0x') ? rawTx : `0x${rawTx}`
+
+    // Recover the public key
+    const fromAddress = web3.eth.accounts.recoverTransaction(formattedRawTx)
+    return fromAddress
+  } catch (e) {
+    if (e instanceof Error) {
+      console.error('Error recovering public key:', e.message)
+    }
+    return ''
+  }
+}
+
+export const recoverPublicKeyFromRawTx = (rawTx: string): string => {
+  try {
+    const tx = Transaction.fromSerializedTx(Buffer.from(rawTx.slice(2), 'hex'))
+    // @ts-ignore
+    const transaction = tx.type === '0x02' ? FeeMarketEIP1559Transaction.fromTxData(tx) : tx
+    // @ts-ignore
+    const recoverPublicKey = ethUtil.bufferToHex(transaction.getSenderPublicKey())
+    return recoverPublicKey
+  } catch (error) {
+    console.error('Error recovering public key:', error)
+    return ''
   }
 }
 
