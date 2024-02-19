@@ -84,4 +84,14 @@ describe('Utils Tests', () => {
     const pubKey = recoverPublicKeyFromRawTx(rawTx)
     expect(expectedPubKey).toEqual(pubKey)
   })
+
+  test('test recover public key for legacy', () => {
+    const rawTx =
+      '0xf86b06843b9aca00825208940d6ec8c979f9c410565494d7494efc2a29c5362b87038d7ea4c68000808193a0e595fa3bc82fda7dd349155845d53fd742e7d1988f710ac41b0304352a1290b1a00ed6fc2bb05bfe59d944866b7f83e16cafea444f67069fe41707d2899de82dfc'
+    const expectedPubKey =
+      '0xe208d1e5bf3694586875370d7bdb49e9cedb2691f6cbef461ac67058977e30052c70f91e62a4ac8669e78eecdbf6588b324466024f39a29b4c2b0a28b3cdfcf8'
+
+    const pubKey = recoverPublicKeyFromRawTx(rawTx)
+    expect(expectedPubKey).toEqual(pubKey)
+  })
 })
