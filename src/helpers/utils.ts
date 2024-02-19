@@ -65,11 +65,21 @@ export const recoverAddressFromRawTx = (rawTx: string): string => {
 
 export const recoverPublicKeyFromRawTx = (rawTx: string): string => {
   try {
-    const tx = Transaction.fromSerializedTx(Buffer.from(rawTx.slice(2), 'hex'))
-    // @ts-ignore
-    const transaction = tx.type === '0x02' ? FeeMarketEIP1559Transaction.fromTxData(tx) : tx
-    // @ts-ignore
-    const recoverPublicKey = ethUtil.bufferToHex(transaction.getSenderPublicKey())
+    const type = rawTx.slice(0, 4)
+    const txBuffer = Buffer.from(rawTx.slice(2), 'hex')
+    let tx
+    let finalTx
+
+    if (type === '0x02') {
+      tx = FeeMarketEIP1559Transaction.fromSerializedTx(txBuffer)
+      finalTx = FeeMarketEIP1559Transaction.fromTxData(tx)
+    } else {
+      tx = Transaction.fromSerializedTx(txBuffer)
+      finalTx = tx
+    }
+
+    const recoverPublicKey = ethUtil.bufferToHex(finalTx.getSenderPublicKey())
+
     return recoverPublicKey
   } catch (error) {
     console.error('Error recovering public key:', error)
