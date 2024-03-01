@@ -3,6 +3,7 @@ import {mnemonic} from '../../mocks/walletMock'
 import {currencies} from '@helpers/currencies'
 import {getEthCore, getEthAddress} from '@helpers/utils'
 import {EthTx} from '@coins/ETH/tx'
+import {recoverPublicKeyFromRawTx} from '@helpers/utils'
 
 const getNode = () => {
   const seed = mnemonicToSeed(mnemonic)
@@ -72,5 +73,25 @@ describe('Utils Tests', () => {
     })
     expect(signTx.hash).toEqual(testTx.hash)
     expect(signTx.tx).toEqual(testTx.tx)
+  })
+
+  test('test recover public key for EIP1559', () => {
+    const rawTx =
+      '0x02f87301820114839896808502540be400825208946ff1a5257bd89277104d15dbfc834f8450ee4cd687038d7ea4c6800080c080a004b4cf2bdaa54553a6fbde9a8acb00f690d317c4ad0ebb0e3308af3214ce9d12a01f042cc5f92165e4077b959196c4b37943fced5cb47e79e6a25b48ec51c8aadf'
+    const expectedPubKey =
+      '0x6341703da2b14c65cbfdff76f77657e84e6cafbfbbe08a129546a375df41e934cf0a0aa639a2d38518037efb06a4e21089f9217b98f88a2992d5e6ef62a25d51'
+
+    const pubKey = recoverPublicKeyFromRawTx(rawTx)
+    expect(expectedPubKey).toEqual(pubKey)
+  })
+
+  test('test recover public key for legacy', () => {
+    const rawTx =
+      '0xf86b06843b9aca00825208940d6ec8c979f9c410565494d7494efc2a29c5362b87038d7ea4c68000808193a0e595fa3bc82fda7dd349155845d53fd742e7d1988f710ac41b0304352a1290b1a00ed6fc2bb05bfe59d944866b7f83e16cafea444f67069fe41707d2899de82dfc'
+    const expectedPubKey =
+      '0xe208d1e5bf3694586875370d7bdb49e9cedb2691f6cbef461ac67058977e30052c70f91e62a4ac8669e78eecdbf6588b324466024f39a29b4c2b0a28b3cdfcf8'
+
+    const pubKey = recoverPublicKeyFromRawTx(rawTx)
+    expect(expectedPubKey).toEqual(pubKey)
   })
 })

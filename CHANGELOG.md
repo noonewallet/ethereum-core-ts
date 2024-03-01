@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/mokkapps/changelog-generator-demo/compare/v1.4.0...v1.5.0) (2024-03-01)
+
+
+### Features
+
+* **1084:** added eth test ad3dd25
+* **1084:** recover pubkey c55b833
+
+
+### Bug Fixes
+
+* pub key recovery 89c4f61
+
 ## [1.4.0](https://github.com/mokkapps/changelog-generator-demo/compare/v1.3.0...v1.4.0) (2023-10-30)
 
 
