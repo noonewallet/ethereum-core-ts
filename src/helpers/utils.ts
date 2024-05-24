@@ -3,9 +3,11 @@ import CustomError from '@helpers/error/custom-error'
 import Web3 from 'web3'
 import {HDNode} from '@noonewallet/crypto-core-ts'
 import {Address, IDecodedInputData, IDecodeParams} from '@helpers/types'
-import {DERIVATION_PATH, DECODE_PARAMS} from '@helpers/config'
+import {DECODE_PARAMS, DERIVATION_PATH} from '@helpers/config'
 import {currencies} from '@helpers/currencies'
-import {Transaction, FeeMarketEIP1559Transaction} from '@ethereumjs/tx'
+import {FeeMarketEIP1559Transaction, Transaction} from '@ethereumjs/tx'
+import * as sigUtil from '@metamask/eth-sig-util'
+import {SignTypedDataVersion, TypedMessage} from '@metamask/eth-sig-util'
 
 export const web3 = new Web3()
 
@@ -206,4 +208,28 @@ export const getFunctionNameByMethodId = (methodId: string) => {
   if (methodId.length !== 10) return ''
   // @ts-ignore
   return methodId in IdList ? IdList[methodId] : ''
+}
+
+export const signTypedData = (
+  privateKey: string,
+  data: TypedMessage<any>,
+  version: string,
+) => {
+  if (!privateKey) {
+    throw Error('privateKey is required')
+  }
+  if (!data) {
+    throw Error('data is required')
+  }
+  if (!version) {
+    throw Error('version is required')
+  }
+
+  const privateKeyBuffer = Buffer.from(privateKey.slice(2), 'hex')
+  const signature = sigUtil.signTypedData({
+    privateKey: privateKeyBuffer,
+    data,
+    version: version as SignTypedDataVersion,
+  })
+  return signature
 }

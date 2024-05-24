@@ -1,9 +1,19 @@
+/**
+ * @jest-environment node
+ */
 import {hdFromSeed, mnemonicToSeed} from '@noonewallet/crypto-core-ts'
 import {mnemonic} from '../../mocks/walletMock'
 import {currencies} from '@helpers/currencies'
-import {getEthCore, getEthAddress} from '@helpers/utils'
+import {
+  getEthAddress,
+  getEthCore,
+  recoverPublicKeyFromRawTx,
+  signTypedData,
+} from '@helpers/utils'
 import {EthTx} from '@coins/ETH/tx'
-import {recoverPublicKeyFromRawTx} from '@helpers/utils'
+import * as sigUtil from '@metamask/eth-sig-util'
+import {TypedMessage, SignTypedDataVersion} from '@metamask/eth-sig-util'
+import * as ethUtil from 'ethereumjs-util'
 
 const getNode = () => {
   const seed = mnemonicToSeed(mnemonic)
@@ -34,6 +44,55 @@ const testTx = {
 }
 
 describe('Utils Tests', () => {
+  test('should get signature using signTypedData (V4)', () => {
+    const privateKey =
+      '0x4c0883a69102937d6231471b5ecb1e1d2be8b03b34aaca8b7fdec1c800b8ab12'
+
+    // EIP-712 typed data
+    const typedData = {
+      types: {
+        EIP712Domain: [
+          {name: 'name', type: 'string'},
+          {name: 'version', type: 'string'},
+          {name: 'chainId', type: 'uint256'},
+          {name: 'verifyingContract', type: 'address'},
+        ],
+        Person: [
+          {name: 'name', type: 'string'},
+          {name: 'wallet', type: 'address'},
+        ],
+        Mail: [
+          {name: 'from', type: 'Person'},
+          {name: 'to', type: 'Person'},
+          {name: 'contents', type: 'string'},
+        ],
+      },
+      primaryType: 'Mail',
+      domain: {
+        name: 'Ether Mail',
+        version: '1',
+        chainId: 1,
+        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+      },
+      message: {
+        from: {
+          name: 'Alice',
+          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+        },
+        to: {
+          name: 'Bob',
+          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+        },
+        contents: 'Hello, Bob!',
+      },
+    }
+
+    const signature = signTypedData(privateKey, typedData, 'V4')
+    const expectedSignature =
+      '0xab56b50dd8b3fd468e86932cc83649f6d83e896dfa3921b12dfa93d964e0d6cc0d4d949a6474fdfcc868178bd2c82f3df06b06b657bfe19428acd91a463a1c131b'
+    expect(signature).toEqual(expectedSignature)
+  })
+
   test('should create eth core', () => {
     const node = getNode()
     const ethCore = getEthCore(node, currencies.ETH.shortName)
