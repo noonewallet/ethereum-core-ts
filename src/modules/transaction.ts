@@ -7,6 +7,7 @@ import {ISignedTx, ITxData} from '@helpers/types'
 export const makeRawEthTx = (data: ITxData): ISignedTx => {
   let {to, value} = data
   const {
+    from,
     nonce,
     gas,
     type,
@@ -55,7 +56,6 @@ export const makeRawEthTx = (data: ITxData): ISignedTx => {
     } else {
       common = new Common({chain: Chain.Mainnet})
     }
-
     let tx
     if (type && +type === 2) {
       // @ts-ignore
@@ -75,14 +75,14 @@ export const makeRawEthTx = (data: ITxData): ISignedTx => {
     const hash = signedTx.hash().toString('hex')
     const txData = {
       type: type,
-      gasLimit: gasLimit?.toString(),
-      gasPrice: gasPrice?.toString(),
-      maxPriorityFeePerGas: maxPriorityFeePerGas?.toString(),
-      maxFeePerGas: maxFeePerGas?.toString(),
+      gasLimit: params.gasLimit,
+      gasPrice: params.gasPrice,
+      maxPriorityFeePerGas: params.maxPriorityFeePerGas,
+      maxFeePerGas: params.maxFeePerGas,
+      nonce: params.nonce,
+      input: params.data,
       value: value?.toString(),
-      nonce: nonce?.toString(),
-      input: data?.data,
-      from: data?.from,
+      from,
       to,
     }
     return {
