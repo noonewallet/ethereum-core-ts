@@ -1,4 +1,5 @@
 export const TRANSFER_METHOD_ID = '0xa9059cbb'
+
 export interface DecodeParamsI {
   [key: string]: any
 }
@@ -63,6 +64,51 @@ export const DECODE_PARAMS: DecodeParamsI = {
     {
       type: 'bytes32[]',
       name: 'pools',
+    },
+  ],
+  // swap(address,(address,address,address,address,uint256,uint256,uint256),bytes)
+  '0x07ed2379': [
+    {
+      type: 'address',
+      name: 'receiver',
+    },
+    {
+      type: 'tuple',
+      name: 'swapDetails',
+      components: [
+        {
+          type: 'address',
+          name: 'sender',
+        },
+        {
+          type: 'address',
+          name: 'recipient',
+        },
+        {
+          type: 'address',
+          name: 'tokenIn',
+        },
+        {
+          type: 'address',
+          name: 'tokenOut',
+        },
+        {
+          type: 'uint256',
+          name: 'amountIn',
+        },
+        {
+          type: 'uint256',
+          name: 'amountOutMin',
+        },
+        {
+          type: 'uint256',
+          name: 'deadline',
+        },
+      ],
+    },
+    {
+      type: 'bytes',
+      name: 'data',
     },
   ],
   default: [

@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@ethereumjs/tx": "^4.2.0",
+    "@metamask/eth-sig-util": "^7.0.2",
     "@noonewallet/crypto-core-ts": "github:noonewallet/crypto-core-ts",
     "ethereumjs-util": "=7.1.5",
     "js-big-decimal": "=1.4.1",
