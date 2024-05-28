@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/mokkapps/changelog-generator-demo/compare/v1.5.0...v1.6.0) (2024-05-28)
+
+
+### Features
+
+* add new signTypedData function eb732e5
+
+
+### Bug Fixes
+
+* fix tx builder 14428ce
+
 ## [1.5.0](https://github.com/mokkapps/changelog-generator-demo/compare/v1.4.0...v1.5.0) (2024-03-01)
 
 
